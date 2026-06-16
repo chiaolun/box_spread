@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capturing the S&amp;P 500 Funding Squeeze with an SPX Box Spread</title>
+<style>
+  :root{
+    --ink:#15202b; --muted:#5c6b7a; --line:#e2e7ec; --bg:#f6f8fa;
+    --accent:#0b5fff; --green:#0a8a3f; --amber:#9a6700; --pink:#fff;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:920px; margin:0 auto; padding:28px 22px 60px}
+  header.top{border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:6px}
+  .eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700}
+  h1{font-size:27px; line-height:1.18; margin:6px 0 6px; letter-spacing:-.01em}
+  .sub{color:var(--muted); font-size:13.5px}
+  .asof{font-size:12px; color:var(--muted); margin-top:8px}
+  .asof b{color:var(--ink)}
+
+  .hero{
+    display:grid; grid-template-columns:1.35fr 1fr; gap:16px; margin:20px 0 8px;
+  }
+  .bigstat{
+    background:linear-gradient(160deg,#0b1f3a,#11365f); color:#fff; border-radius:14px;
+    padding:20px 22px; display:flex; flex-direction:column; justify-content:center;
+  }
+  .bigstat .lab{font-size:11px; letter-spacing:.12em; text-transform:uppercase; opacity:.8}
+  .bigstat .num{font-size:46px; font-weight:800; line-height:1; margin:6px 0 4px; letter-spacing:-.02em}
+  .bigstat .num small{font-size:22px; font-weight:600; opacity:.85}
+  .bigstat .pill{display:inline-block; background:rgba(255,255,255,.16); border-radius:999px; padding:3px 10px; font-size:12px; margin-top:8px; width:fit-content}
+  .spreadbox{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px;
+    display:flex; flex-direction:column; justify-content:center; gap:10px;
+  }
+  .spreadrow{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+  .spreadrow .k{color:var(--muted); font-size:13px}
+  .spreadrow .v{font-weight:700}
+  .spreadrow .v .bp{color:var(--green); font-weight:800}
+
+  h2{font-size:15px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink);
+     margin:30px 0 10px; padding-bottom:6px; border-bottom:1px solid var(--line)}
+  p{margin:9px 0}
+  .muted{color:var(--muted)}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:12px 0}
+
+  table{border-collapse:collapse; width:100%; font-size:13.5px; margin:8px 0}
+  th,td{padding:8px 10px; text-align:right; border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); border-bottom:2px solid var(--ink)}
+  tbody tr.feat{background:#eef4ff}
+  tbody tr.feat td{font-weight:600}
+  td.pos{color:var(--green); font-weight:700}
+  .tnote{font-size:12px; color:var(--muted); margin-top:4px}
+
+  .ticket{display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--line); border-radius:12px; overflow:hidden}
+  .leg{padding:12px 14px; border-bottom:1px solid var(--line)}
+  .leg:nth-child(odd){border-right:1px solid var(--line)}
+  .leg .act{font-weight:800; font-size:12px; letter-spacing:.04em}
+  .buy{color:var(--green)} .sell{color:#c0392b}
+  .leg .desc{font-size:14px; margin:2px 0}
+  .leg .px{font-size:12px; color:var(--muted)}
+  .net{grid-column:1 / -1; background:#0b1f3a; color:#fff; padding:13px 16px; display:flex; justify-content:space-between; align-items:center}
+  .net b{font-size:18px}
+
+  .payoff{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px}
+  .payoff .pc{background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:12px; text-align:center}
+  .payoff .pc .l{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
+  .payoff .pc .n{font-size:20px; font-weight:800; margin-top:3px}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  ul.tight{margin:6px 0; padding-left:18px}
+  ul.tight li{margin:5px 0}
+  .formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; background:#0d1117; color:#e6edf3;
+    border-radius:8px; padding:12px 14px; font-size:13px; overflow-x:auto; margin:8px 0}
+  .formula .c{color:#7ee787}
+  .tag{display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; background:#eef4ff; color:var(--accent)}
+  .warn{border-left:4px solid var(--amber); background:#fff9ec}
+  footer{margin-top:34px; padding-top:14px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted)}
+  footer a{color:var(--accent); text-decoration:none}
+  @media(max-width:680px){
+    .hero,.grid2{grid-template-columns:1fr}
+    .payoff{grid-template-columns:1fr}
+  }
+  @media print{ body{background:#fff} .card,.spreadbox{box-shadow:none} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="top">
+    <div class="eyebrow">Fixed-Income via Equity Options &middot; Trade Idea</div>
+    <h1>Lending into the S&amp;P 500 Funding Squeeze with an SPX Box Spread</h1>
+    <div class="sub">A fully-collateralized, market-neutral way to harvest the elevated equity-financing rate that is currently inflating S&amp;P&nbsp;500 futures — by becoming the lender instead of the borrower.</div>
+    <div class="asof">Pricing as&nbsp;of <b>15&nbsp;Jun&nbsp;2026</b> (CBOE delayed quotes) &middot; SPX spot <b>7,554.29</b> &middot; SOFR <b>3.60%</b> &middot; 6-mo T-bill <b>3.81%</b></div>
+  </header>
+
+  <div class="hero">
+    <div class="bigstat">
+      <div class="lab">Implied financing yield you capture</div>
+      <div class="num">4.28<small>%</small></div>
+      <div class="lab" style="opacity:.85">Dec-2026 SPX 7000/8000 box &middot; locked to maturity</div>
+      <div class="pill">+68 bp over SOFR &middot; +47 bp over the 6-mo T-bill</div>
+    </div>
+    <div class="spreadbox">
+      <div class="spreadrow"><span class="k">Box implied yield (6-mo)</span><span class="v">4.28%</span></div>
+      <div class="spreadrow"><span class="k">6-mo Treasury bill</span><span class="v">3.81%</span></div>
+      <div class="spreadrow"><span class="k">SOFR (secured o/n)</span><span class="v">3.60%</span></div>
+      <div class="spreadrow" style="border-top:1px dashed var(--line);padding-top:9px"><span class="k">Funding premium captured</span><span class="v"><span class="bp">+47 – 68 bp</span></span></div>
+      <div class="spreadrow"><span class="k">Term curve (6m&rarr;2.5y)</span><span class="v">4.28% &rarr; 4.57%</span></div>
+    </div>
+  </div>
+
+  <h2>1 &middot; What's happening</h2>
+  <p>Per Bloomberg (14&nbsp;Jun&nbsp;2026) and the GuruFocus piece that referenced it, the cost to <em>fund</em> U.S. equity exposure has spiked. The financing spread baked into S&amp;P&nbsp;500 futures — what you implicitly pay to own the index without putting up all the cash — has widened to its <b>biggest gap over Treasury financing rates since late&nbsp;2024</b>. Three forces are competing for the same scarce dealer balance sheet:</p>
+  <div class="card">
+    <ul class="tight">
+      <li><b>The AI equity rally</b> — record long exposure that has to be financed.</li>
+      <li><b>Leveraged / single-stock ETF growth</b> — structurally short funding, they roll futures and swaps continuously.</li>
+      <li><b>SpaceX's ~$75&nbsp;billion listing</b> — a balance-sheet event that crowds out other financing.</li>
+    </ul>
+    <p class="muted" style="margin-bottom:0">CME decomposes the futures roll cost into three buckets: the <b>3-month SOFR forward curve</b>, a <b>convenience yield</b>, and an <b>equity-repo premium</b>. It is the last bucket that is blowing out — leveraged longs are paying up to borrow, which means <b>someone on the other side can lend at an above-Treasury rate.</b> That lender is the trade below.</p>
+  </div>
+
+  <h2>2 &middot; The instrument — a long SPX box spread</h2>
+  <p>A <b>box spread</b> combines a bull call spread and a bear put spread on the same two strikes and expiry. Its payoff at expiration is <b>fixed at the strike width, no matter where the index settles</b> — it is a synthetic zero-coupon bond. Buying the box ("long box") means paying a discounted amount today and collecting the full width at expiry: <b>you are lending money</b> and earning the options market's implied financing rate.</p>
+
+  <div class="formula">
+Long box = <span class="c">[buy call Kₗₒ, sell call Kₕᵢ]</span> + <span class="c">[buy put Kₕᵢ, sell put Kₗₒ]</span><br>
+Cost today = (Kₕᵢ − Kₗₒ) · e^(−r·T)   &larr; the spot price S cancels out entirely<br>
+&rArr; the only thing the price reveals is <b>r</b>, the implied financing / funding rate.
+  </div>
+  <p class="muted">Because the index level cancels, a box has <b>no market risk</b> — it isolates pure interest rate. The implied <code>r</code> is the same secured-funding rate that is being squeezed; when leveraged longs bid up financing, boxes trade cheap and the long-box lender's yield rises above Treasuries.</p>
+
+  <h2>3 &middot; The trade ticket</h2>
+  <p><span class="tag">FEATURED</span> &nbsp;SPX <b>7000 / 8000</b> box, expiring <b>18&nbsp;Dec&nbsp;2026</b> (186 days). Standard, A.M.-cash-settled, <b>European-style</b> SPX options — no early assignment, no pin risk, OCC-cleared. Per 1-lot the strike width is 1,000 index points = <b>$100,000</b> guaranteed at expiry.</p>
+
+  <div class="ticket">
+    <div class="leg"><div class="act buy">BUY</div><div class="desc">1 × SPX 18-Dec-26 <b>7000 Call</b></div><div class="px">pay ask 840.70 &middot; mid 839.25</div></div>
+    <div class="leg"><div class="act sell">SELL</div><div class="desc">1 × SPX 18-Dec-26 <b>8000 Call</b></div><div class="px">collect bid 194.20 &middot; mid 195.05</div></div>
+    <div class="leg"><div class="act buy">BUY</div><div class="desc">1 × SPX 18-Dec-26 <b>8000 Put</b></div><div class="px">pay ask 498.40 &middot; mid 497.20</div></div>
+    <div class="leg"><div class="act sell">SELL</div><div class="desc">1 × SPX 18-Dec-26 <b>7000 Put</b></div><div class="px">collect bid 161.90 &middot; mid 162.75</div></div>
+    <div class="net">
+      <span>Net debit (mid) — your loan principal today</span>
+      <b>$97,865</b>
+    </div>
+  </div>
+
+  <div class="payoff">
+    <div class="pc"><div class="l">Pay today (mid)</div><div class="n">$97,865</div></div>
+    <div class="pc"><div class="l">Receive at expiry</div><div class="n">$100,000</div></div>
+    <div class="pc"><div class="l">Locked profit</div><div class="n" style="color:var(--green)">$2,135</div></div>
+  </div>
+  <p class="tnote">Order entry: send as a single 4-legged <b>net-debit limit</b> at ~979.0. SPX boxes are deeply liquid (the 7000-strike legs alone carry &gt;125,000 contracts of open interest) and routinely fill within ~$0.50–1.00 of mid. Crossing the <em>full</em> quoted bid/ask on all four legs would cost 983.0 (≈3.39% — the conservative worst case); a near-mid fill delivers the 4.28% headline.</p>
+
+  <h2>4 &middot; The yield, across the curve</h2>
+  <p>The same box at later expiries reveals the term structure of the implied financing rate. It is <b>upward-sloping and elevated over Treasuries at every tenor</b> — the signature of the funding squeeze. Lock in longer to term out the rate; trade the 6-month for maximum liquidity.</p>
+
+  <table>
+    <thead>
+      <tr><th>Expiry</th><th>Days</th><th>Net debit</th><th>Implied yield<sup>1</sup></th><th>Matched UST</th><th>vs&nbsp;UST</th><th>vs&nbsp;SOFR</th></tr>
+    </thead>
+    <tbody>
+      <tr class="feat"><td>18 Dec 2026</td><td>186</td><td>978.65</td><td>4.28%</td><td>3.81%</td><td class="pos">+47 bp</td><td class="pos">+68 bp</td></tr>
+      <tr><td>17 Jun 2027</td><td>367</td><td>957.15</td><td>4.45%</td><td>3.84%</td><td class="pos">+61 bp</td><td class="pos">+85 bp</td></tr>
+      <tr><td>17 Dec 2027</td><td>550</td><td>936.65</td><td>4.49%</td><td>3.96%</td><td class="pos">+53 bp</td><td class="pos">+89 bp</td></tr>
+      <tr><td>15 Dec 2028</td><td>914</td><td>897.25</td><td>4.57%</td><td>4.09%</td><td class="pos">+49 bp</td><td class="pos">+97 bp</td></tr>
+    </tbody>
+  </table>
+  <div class="tnote"><sup>1</sup>Money-market annualized yield from mid prices, (width/cost − 1)/T. Effective-annual equivalents: 4.33% / 4.45% / 4.44% / 4.43%. Matched UST interpolated from the 15-Jun-2026 Treasury par curve (6-mo 3.81, 1-yr 3.84, 2-yr 4.07, 3-yr 4.10). All four boxes use the same 7000/8000 strikes; every leg carries thousands-to-tens-of-thousands of contracts in open interest.</div>
+
+  <h2>5 &middot; Why this is (almost) risk-free, and where the risk actually is</h2>
+  <div class="grid2">
+    <div class="card">
+      <p style="margin-top:0"><b>What makes it safe</b></p>
+      <ul class="tight">
+        <li><b>No market risk.</b> Payoff = strike width regardless of where SPX settles. The index cancels in the math.</li>
+        <li><b>European / cash-settled.</b> SPX options can't be exercised early — no assignment surprise, no pin risk.</li>
+        <li><b>OCC-cleared.</b> Your "borrower" is the clearinghouse, effectively an AA-rated counterparty.</li>
+        <li><b>1256 tax treatment.</b> SPX is a Section-1256 contract (60/40 long/short-term).</li>
+      </ul>
+    </div>
+    <div class="card warn">
+      <p style="margin-top:0"><b>What to watch</b></p>
+      <ul class="tight">
+        <li><b>Hold to maturity to lock the rate.</b> Interim mark-to-market moves with rates: if funding rates fall you can sell early for a gain; if they rise, an early exit prints a loss.</li>
+        <li><b>Execution slippage.</b> Fill quality on the 4-leg package is the main variable; insist on a net-debit limit near mid.</li>
+        <li><b>Capital is tied up.</b> Under portfolio margin a long box is near-risk-free so margin is light, but the principal is committed for the term.</li>
+        <li><b>Section 1258 / straddle rules</b> may recharacterize the return as ordinary interest — confirm with a tax advisor.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>6 &middot; Bottom line</h2>
+  <div class="card" style="border-left:4px solid var(--green)">
+    <p style="margin:0">The equity-funding squeeze that is inflating S&amp;P&nbsp;500 futures financing is directly harvestable. By <b>buying</b> the 18-Dec-2026 SPX 7000/8000 box for ~$97,865 and collecting a guaranteed $100,000 at expiry, you lend into that demand at an implied <b>4.28% — roughly 47 bp over the matched T-bill and 68 bp over SOFR</b>, with no directional exposure to stocks. Extend to Dec-2027/2028 to lock ~4.5–4.6% for longer. It is, in effect, a synthetic, OCC-collateralized T-bill yielding the squeeze premium.</p>
+  </div>
+
+  <footer>
+    <b>Sources &amp; data.</b> Option prices: CBOE delayed quotes, <a href="https://cdn.cboe.com/api/global/delayed_quotes/options/_SPX.json">_SPX.json</a> (15-Jun-2026). Benchmark rates: <a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve">U.S. Treasury Daily Par Yield Curve</a> (15-Jun-2026); <a href="https://www.sofrrate.com/">SOFR</a> 3.60%. Narrative: <a href="https://www.bloomberg.com/news/articles/2026-06-14/s-p-500-funding-squeeze-driven-by-ai-rally-spacex-ipo-stretches-banks">Bloomberg, "S&amp;P 500 Funding Squeeze Driven by AI Rally, SpaceX IPO"</a> (14-Jun-2026); <a href="https://www.cmegroup.com/education/files/S-and-P-500-Implied-Financing.pdf">CME, "Implied Financing in S&amp;P 500 Futures."</a> Box-spread mechanics: <a href="https://go.cboe.com/spx-box-spreads">CBOE SPX Box Spreads</a>.<br><br>
+    <b>Disclaimer.</b> Educational analysis, not investment advice or a solicitation. Prices are delayed and indicative; actual fills, financing rates, and yields will differ. Options involve risk; consult a licensed advisor before trading.
+  </footer>
+
+</div>
+</body>
+</html>
