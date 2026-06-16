@@ -1,6 +1,8 @@
 # SPX Box-Spread Funding-Squeeze Report
 
-Generates `box_spread_report.html` — a single-page report that measures the
+**Live report: https://chiaolun.github.io/box_spread/**
+
+Generates `index.html` — a single-page report that measures the
 implied financing rate embedded in SPX options (via box spreads) and frames a
 trade to **capture** it by lending into the equity-funding squeeze.
 
@@ -153,13 +155,15 @@ receive a guaranteed **$100,000** at expiry → **4.28%**, about **+47 bp** over
 
 ## Step 4 — Assemble the HTML
 
-`box_spread_report.html` is a self-contained file (inline CSS, no JS/build step).
+`index.html` is a self-contained file (inline CSS, no JS/build step).
 Paste the computed figures from Step 3 into the hero stat, the trade ticket, and
 the term-structure table, then open it:
 
 ```bash
-open box_spread_report.html        # macOS  (use xdg-open on Linux)
+open index.html        # macOS  (use xdg-open on Linux)
 ```
+
+It is published via GitHub Pages at **https://chiaolun.github.io/box_spread/**.
 
 ---
 
