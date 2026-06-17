@@ -262,29 +262,7 @@ Cost today = (Kₕᵢ − Kₗₒ) · e^(−r·T)   &larr; the spot price S canc
     <li><b>Not riskless.</b> Where the box is set-and-forget, the conversion's legs must be held and managed to realize the rate.</li>
   </ul>
 
-  <h2>7 &middot; The futures variant — conversion &amp; reversal</h2>
-  <p>Each half of the box is a <b>synthetic forward</b> (a call and a put at one strike). Swap one of them for an actual <b>futures</b> contract and it is no longer a box — it's a <b>conversion</b> or a <b>reversal</b>, the textbook option/futures arbitrage pair:</p>
-  <div class="card">
-    <ul class="tight" style="margin:.2em 0">
-      <li><b>Conversion</b> = long future + short call + long put (one strike) — the box's <em>long</em> synthetic forward swapped for a long future.</li>
-      <li><b>Reversal</b> (reverse conversion) = short future + long call + short put — the <em>short</em> synthetic forward swapped for a short future.</li>
-    </ul>
-    <p class="muted" style="margin-bottom:0">Neat identity: a <b>box = a conversion at one strike + a reversal at the other.</b> Do both and the two futures cancel, leaving exactly the four options of the K1/K2 box.</p>
-  </div>
-  <div class="ticket">
-    <div class="leg"><div class="act buy">BUY</div><div class="desc">S&amp;P 500 <b>future</b> — long, sized to index notional</div><div class="px">≈ 7,691 &middot; 2× ES Dec-26 ≈ 1 SPX unit</div></div>
-    <div class="leg"><div class="act sell">SELL</div><div class="desc">SPX 18-Dec-26 <b>7500 call</b></div><div class="px">collect ≈ 465.10</div></div>
-    <div class="leg"><div class="act buy">BUY</div><div class="desc">SPX 18-Dec-26 <b>7500 put</b></div><div class="px">pay ≈ 277.85</div></div>
-    <div class="leg"><div class="act sell">SELL</div><div class="desc">… together = a <b>conversion</b></div><div class="px">margin, not principal</div></div>
-    <div class="net"><span>Captured: the futures − options forward basis</span><b>≈ 0 bp</b></div>
-  </div>
-  <div class="card warn">
-    <p style="margin-top:0"><b>Why it doesn't capture the squeeze.</b> A future is <em>leveraged</em> — it ties up margin, not principal. The box earns the cash rate because you <em>lend</em> the full discounted strike width; the §6 conversion earns the equity rate because you <em>lend</em> the full notional by owning the index. Replace an option pair with a future and that principal disappears — so nothing is lent and there's no financing yield to collect.</p>
-    <p style="margin-bottom:0">What's left is purely the <b>futures-vs-options forward basis</b>, and for SPX the two are arbitraged tight: the Dec-2026 options-imply a forward of <b>7,691</b>, essentially the E-mini's (front-month cross-check: options forward 7,626 vs ES ≈ 7,628). That basis is ≈ 0 — this is a relative-value / parity-enforcement structure, not a cash-yield vehicle.</p>
-  </div>
-  <p class="muted">Where it <em>is</em> useful: <b>execution.</b> The future is far more liquid and tighter than the deep-ITM 7000-strike options the box leans on, so quoting one ultra-liquid futures leg against two options (rather than four options) can cut slippage materially — the standard market-maker way to enforce put–call parity against the future. The payoff geometry is identical to §8's conversion, with the long-stock diagonal simply replaced by a long-futures diagonal.</p>
-
-  <h2>8 &middot; Payoff geometry — risky legs, flat sum</h2>
+  <h2>7 &middot; Payoff geometry — risky legs, flat sum</h2>
   <p>Both trades are market-neutral for the same reason: each leg is individually exposed to where the S&amp;P settles (a sloped line), but the legs <b>add up to a horizontal line</b> — <b>zero slope, therefore zero exposure.</b> The box's four legs and the conversion's three legs each collapse to a flat net:</p>
   <div class="figrow">
     <figure>
@@ -359,7 +337,7 @@ Cost today = (Kₕᵢ − Kₗₒ) · e^(−r·T)   &larr; the spot price S canc
   </div>
   <p class="muted">The <em>height</em> of each flat line is just convention — payoff vs P&amp;L, whether premiums and dividends are netted in — and is otherwise arbitrary. What matters is that the <b>slope is zero</b>: the position pays the same wherever the index lands. The yield is simply the gap between what you pay today and that locked terminal value — discounted at the <b>cash rate</b> for the box, at the richer <b>equity-financing rate</b> for the conversion.</p>
 
-  <h2>9 &middot; Why this is (almost) risk-free, and where the risk actually is</h2>
+  <h2>8 &middot; Why this is (almost) risk-free, and where the risk actually is</h2>
   <div class="grid2">
     <div class="card">
       <p style="margin-top:0"><b>What makes it safe</b></p>
@@ -381,10 +359,9 @@ Cost today = (Kₕᵢ − Kₗₒ) · e^(−r·T)   &larr; the spot price S canc
     </div>
   </div>
 
-  <h2>10 &middot; Bottom line</h2>
+  <h2>9 &middot; Bottom line</h2>
   <div class="card" style="border-left:4px solid var(--green)">
-    <p style="margin:0 0 9px">The same SPX option chain prices <b>two</b> rates. The <b>box</b> harvests the first — a riskless, OCC-collateralized <b>~4.28% cash rate</b>, a clean synthetic T-bill ~47 bp over the bill but essentially <em>untouched</em> by the equity squeeze (that pickup is mostly Treasury specialness). The <b>conversion</b> harvests the second — the <b>~4.67% equity-financing rate</b> that the AI-rally / leveraged-ETF / SpaceX funding squeeze has inflated: ~39 bp richer than the box and ~86 bp over the T-bill. You collect that extra by owning the index and selling it forward, at the cost of dividend, capital and tracking risk. <b>Want riskless carry? Buy the box. Want to actually capture the squeeze? Put on the conversion.</b></p>
-    <p style="margin:0">And the <b>futures variant</b> (§7) — swapping an option pair for a future to make a conversion/reversal — is elegant and far more liquid, but because a future lends no principal it collects only the (≈0) futures-vs-options basis, not a financing yield. Capturing a rate requires lending cash; a leveraged future can't.</p>
+    <p style="margin:0">The same SPX option chain prices <b>two</b> rates. The <b>box</b> harvests the first — a riskless, OCC-collateralized <b>~4.28% cash rate</b>, a clean synthetic T-bill ~47 bp over the bill but essentially <em>untouched</em> by the equity squeeze (that pickup is mostly Treasury specialness). The <b>conversion</b> harvests the second — the <b>~4.67% equity-financing rate</b> that the AI-rally / leveraged-ETF / SpaceX funding squeeze has inflated: ~39 bp richer than the box and ~86 bp over the T-bill. You collect that extra by owning the index and selling it forward, at the cost of dividend, capital and tracking risk. <b>Want riskless carry? Buy the box. Want to actually capture the squeeze? Put on the conversion.</b></p>
   </div>
 
   <footer>
