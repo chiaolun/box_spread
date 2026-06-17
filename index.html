@@ -103,6 +103,24 @@
   .gh-ribbon a:hover{background:linear-gradient(160deg,#11365f,#0b5fff)}
   .gh-ribbon svg{width:13px; height:13px; vertical-align:-2px; margin-right:5px; fill:currentColor}
   @media print{ .gh-ribbon{display:none} }
+
+  /* payoff-decomposition charts */
+  .figrow{display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; margin:14px 0}
+  .figrow figure{margin:0; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 12px 8px}
+  .figrow figcaption{font-size:12px; color:var(--muted); margin-top:6px; padding:0 2px}
+  .pchart{width:100%; height:auto; display:block}
+  .pchart .ct{font-size:12px; font-weight:700; fill:var(--ink)}
+  .pchart .ax{font-size:10px; fill:var(--muted)}
+  .pchart .am{text-anchor:middle}
+  .pchart .axl{font-size:10.5px; fill:#46566a; font-weight:600}
+  .pchart .pframe{fill:#fcfcfd; stroke:#dce1e6; stroke-width:1}
+  .pchart .pzero{stroke:#c2cad2; stroke-width:1; stroke-dasharray:3 3}
+  .pchart .plab{font-size:10px; fill:#46566a; font-weight:600}
+  .pchart .netlab{fill:var(--green)}
+  .pchart .op{font-size:16px; fill:#8a97a3; font-weight:700; text-anchor:middle}
+  .twocol-num{display:flex; gap:22px; margin:10px 0 4px}
+  .twocol-num .sep{border-left:1px solid rgba(255,255,255,.22); padding-left:22px}
+  @media(max-width:680px){ .figrow{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -111,24 +129,32 @@
 
   <header class="top">
     <div class="eyebrow">Fixed-Income via Equity Options &middot; Trade Idea</div>
-    <h1>Lending into the S&amp;P 500 Funding Squeeze with an SPX Box Spread</h1>
-    <div class="sub">A fully-collateralized, market-neutral way to harvest the elevated equity-financing rate that is currently inflating S&amp;P&nbsp;500 futures — by becoming the lender instead of the borrower.</div>
+    <h1>Harvesting the S&amp;P 500 Funding Squeeze: Box Spreads vs Conversions</h1>
+    <div class="sub">Two market-neutral trades hide in the same option chain: a <b>box spread</b> that locks a riskless cash rate, and a <b>conversion</b> that actually harvests the equity-financing squeeze inflating S&amp;P&nbsp;500 futures. Here's what each one really yields — and why they're not the same number.</div>
     <div class="asof">Pricing as&nbsp;of <b>15&nbsp;Jun&nbsp;2026</b> (CBOE delayed quotes) &middot; SPX spot <b>7,554.29</b> &middot; SOFR <b>3.60%</b> &middot; 6-mo T-bill <b>3.81%</b></div>
   </header>
 
   <div class="hero">
     <div class="bigstat">
-      <div class="lab">Implied financing yield you capture</div>
-      <div class="num">4.28<small>%</small></div>
-      <div class="lab" style="opacity:.85">Dec-2026 SPX 7000/8000 box &middot; locked to maturity</div>
-      <div class="pill">+68 bp over SOFR &middot; +47 bp over the 6-mo T-bill</div>
+      <div class="lab">The same options price two rates at once</div>
+      <div class="twocol-num">
+        <div>
+          <div class="num" style="font-size:34px">4.28<small>%</small></div>
+          <div class="lab" style="opacity:.85">box &middot; riskless cash rate</div>
+        </div>
+        <div class="sep">
+          <div class="num" style="font-size:34px">4.67<small>%</small></div>
+          <div class="lab" style="opacity:.85">conversion &middot; equity financing</div>
+        </div>
+      </div>
+      <div class="pill">the ~39 bp gap between them <b>is</b> the funding squeeze</div>
     </div>
     <div class="spreadbox">
-      <div class="spreadrow"><span class="k">Box implied yield (6-mo)</span><span class="v">4.28%</span></div>
+      <div class="spreadrow"><span class="k">Conversion — equity financing (6-mo)</span><span class="v">4.67%</span></div>
+      <div class="spreadrow"><span class="k">Box — riskless cash rate (6-mo)</span><span class="v">4.28%</span></div>
       <div class="spreadrow"><span class="k">6-mo Treasury bill</span><span class="v">3.81%</span></div>
       <div class="spreadrow"><span class="k">SOFR (secured o/n)</span><span class="v">3.60%</span></div>
-      <div class="spreadrow" style="border-top:1px dashed var(--line);padding-top:9px"><span class="k">Funding premium captured</span><span class="v"><span class="bp">+47 – 68 bp</span></span></div>
-      <div class="spreadrow"><span class="k">Term curve (6m&rarr;2.5y)</span><span class="v">4.28% &rarr; 4.57%</span></div>
+      <div class="spreadrow" style="border-top:1px dashed var(--line);padding-top:9px"><span class="k">Equity-repo squeeze (box&rarr;conversion)</span><span class="v"><span class="bp">+39 bp</span></span></div>
     </div>
   </div>
 
@@ -190,7 +216,128 @@ Cost today = (Kₕᵢ − Kₗₒ) · e^(−r·T)   &larr; the spot price S canc
   </table>
   <div class="tnote"><sup>1</sup>Money-market annualized yield from mid prices, (width/cost − 1)/T. Effective-annual equivalents: 4.33% / 4.45% / 4.44% / 4.43%. Matched UST interpolated from the 15-Jun-2026 Treasury par curve (6-mo 3.81, 1-yr 3.84, 2-yr 4.07, 3-yr 4.10). All four boxes use the same 7000/8000 strikes; every leg carries thousands-to-tens-of-thousands of contracts in open interest.</div>
 
-  <h2>5 &middot; Why this is (almost) risk-free, and where the risk actually is</h2>
+  <h2>5 &middot; Does the box actually capture the squeeze? Two rates, not one</h2>
+  <p>Short answer: <b>not really</b> — and this is the subtle part. An SPX option price secretly contains <em>two independent</em> rates, and the funding squeeze lives in only one of them.</p>
+  <div class="grid2">
+    <div class="card">
+      <p style="margin-top:0"><b>① Discount rate on the strike — a cash rate.</b></p>
+      <p class="muted" style="margin-bottom:0">A box discounts a <em>fixed</em> cash amount (the strike width) back to today. The rate doing the discounting is a <b>collateralized cash rate ≈ SOFR / OIS</b> — that is all the box ever sees. Its ~47 bp pickup over the 6-mo T-bill is largely the <b>Treasury "specialness" / OIS–bill spread</b> (bills yield less than the true risk-free rate), <em>not</em> equity financing. The box is a clean synthetic T-bill — but a T-bill doesn't capture an equity squeeze.</p>
+    </div>
+    <div class="card">
+      <p style="margin-top:0"><b>② Implied forward on the index — the equity-financing rate.</b></p>
+      <p class="muted" style="margin-bottom:0">Put–call parity <em>also</em> pins an <b>implied forward</b>: F = (spot − PV&nbsp;dividends) compounded at the <em>equity</em> financing rate. The Dec-2026 options imply <b>F ≈ 7,691</b> vs spot 7,554 — a 3.53% carry; add the 1.09% dividend yield and the embedded financing rate is <b>≈ 4.6%</b>. <em>That</em> number — and the futures basis the article is about — are the same rate. The squeeze lives here.</p>
+    </div>
+  </div>
+  <p>So the chain quotes the riskless cash rate (~4.28%) and the equity-financing rate (~4.67%) <b>simultaneously</b>. The ~39 bp between them is the equity-repo squeeze — and the box, which only ever touches the first rate, leaves it on the table. To collect it you must trade the forward leg directly: the <b>conversion</b>.</p>
+  <table>
+    <thead><tr><th>Expiry</th><th>Box yield<br>(cash rate)</th><th>Conversion yield<br>(equity financing)</th><th>Squeeze premium<sup>1</sup></th></tr></thead>
+    <tbody>
+      <tr class="feat"><td>18 Dec 2026</td><td>4.28%</td><td>4.67%</td><td class="pos">+39 bp</td></tr>
+      <tr><td>17 Jun 2027</td><td>4.45%</td><td>4.84%</td><td class="pos">+38 bp</td></tr>
+      <tr><td>17 Dec 2027</td><td>4.49%</td><td>4.88%</td><td class="pos">+39 bp</td></tr>
+      <tr><td>15 Dec 2028</td><td>4.57%</td><td>5.01%</td><td class="pos">+44 bp</td></tr>
+    </tbody>
+  </table>
+  <div class="tnote"><sup>1</sup>Both yields money-market-annualized for comparability with §4. Conversion yield = implied-forward carry + 1.09% S&amp;P&nbsp;500 dividend yield. Implied forwards from put–call parity on the 7000/8000 chain: 7,691 / 7,835 / 7,977 / 8,274 — consistent with the E-mini (ES) futures (front ≈ 7,628). The ~38–44 bp gap is the equity-repo premium the box does <em>not</em> earn.</div>
+
+  <h2>6 &middot; The conversion — collecting the squeeze directly</h2>
+  <p>A <b>conversion</b> is the mirror image of the leveraged long that's paying up for exposure: you <b>own the physical index and sell it forward</b> where the forward is rich, becoming the financier. Mechanically it's long the index plus a short synthetic forward (a collar struck at one price):</p>
+  <div class="ticket">
+    <div class="leg"><div class="act buy">BUY</div><div class="desc">S&amp;P 500 <b>physical</b> (SPY / VOO / IVV ETF or basket)</div><div class="px">≈ 7,554 &middot; funded with your own cash</div></div>
+    <div class="leg"><div class="act sell">SELL</div><div class="desc">SPX 18-Dec-26 <b>7500 call</b></div><div class="px">collect ≈ 465.10</div></div>
+    <div class="leg"><div class="act buy">BUY</div><div class="desc">SPX 18-Dec-26 <b>7500 put</b></div><div class="px">pay ≈ 277.85</div></div>
+    <div class="leg"><div class="act sell">SELL</div><div class="desc">… together = short the forward at <b>≈ 7,691</b></div><div class="px">or simply sell 1 ES Dec-26 future</div></div>
+    <div class="net"><span>Locked over 6 months: 137-pt forward premium + ~1.09% dividends</span><b>≈ 4.67%</b></div>
+  </div>
+  <div class="payoff">
+    <div class="pc"><div class="l">Implied financing yield</div><div class="n">4.67%</div></div>
+    <div class="pc"><div class="l">vs 6-mo T-bill</div><div class="n" style="color:var(--green)">+86 bp</div></div>
+    <div class="pc"><div class="l">extra vs the box</div><div class="n" style="color:var(--green)">+39 bp</div></div>
+  </div>
+  <p class="muted" style="margin-bottom:4px">It out-yields the box because you're lending into the <em>equity</em>-financing market (where the squeeze is), not the cash market. The price is that it isn't nearly as clean:</p>
+  <ul class="tight">
+    <li><b>Capital-intensive.</b> You fund the full index notional, not a discounted strike — and unlike the box it isn't self-collateralizing.</li>
+    <li><b>Dividend risk.</b> The yield assumes ~1.09% of dividends actually shows up; cuts or timing shifts move it.</li>
+    <li><b>Tracking &amp; settlement.</b> SPX is cash-settled and not deliverable, so the "physical" is an ETF/basket (or a future) run against SPX options — small tracking/financing frictions. The clean single-ticker version is on <b>SPY</b> (deliverable), but SPY's American options add ex-dividend early-assignment risk on the short call.</li>
+    <li><b>Not riskless.</b> Where the box is set-and-forget, the conversion's legs must be held and managed to realize the rate.</li>
+  </ul>
+
+  <h2>7 &middot; Payoff geometry — risky legs, flat sum</h2>
+  <p>Both trades are market-neutral for the same reason: each leg is individually exposed to where the S&amp;P settles (a sloped line), but the legs <b>add up to a horizontal line</b> — <b>zero slope, therefore zero exposure.</b> The box's four legs and the conversion's three legs each collapse to a flat net:</p>
+  <div class="figrow">
+    <figure>
+<svg viewBox="0 0 472 428" class="pchart" role="img" aria-label="Long box spread decomposition">
+<text x="48" y="15" class="ct">Long box spread (7000/8000): four legs, one flat sum</text>
+<rect x="48" y="42" width="410" height="50" class="pframe"/>
+<line x1="48" y1="77.4" x2="458" y2="77.4" class="pzero"/>
+<polyline points="48.0,77.4 145.6,77.4 340.9,56.6 458.0,44.1" fill="none" stroke="#0b5fff" stroke-width="2"/>
+<text x="48" y="36" class="plab">long 7000 call</text>
+<text x="16" y="149" class="op">+</text>
+<rect x="48" y="118" width="410" height="50" class="pframe"/>
+<line x1="48" y1="153.4" x2="458" y2="153.4" class="pzero"/>
+<polyline points="48.0,153.4 145.6,153.4 340.9,153.4 458.0,165.9" fill="none" stroke="#c0392b" stroke-width="2"/>
+<text x="48" y="112" class="plab">short 8000 call</text>
+<text x="16" y="225" class="op">+</text>
+<rect x="48" y="194" width="410" height="50" class="pframe"/>
+<line x1="48" y1="229.4" x2="458" y2="229.4" class="pzero"/>
+<polyline points="48.0,198.2 145.6,208.6 340.9,229.4 458.0,229.4" fill="none" stroke="#7a3fb5" stroke-width="2"/>
+<text x="48" y="188" class="plab">long 8000 put</text>
+<text x="16" y="301" class="op">+</text>
+<rect x="48" y="270" width="410" height="50" class="pframe"/>
+<line x1="48" y1="305.4" x2="458" y2="305.4" class="pzero"/>
+<polyline points="48.0,315.8 145.6,305.4 340.9,305.4 458.0,305.4" fill="none" stroke="#d98000" stroke-width="2"/>
+<text x="48" y="264" class="plab">short 7000 put</text>
+<text x="16" y="377" class="op">=</text>
+<rect x="48" y="346" width="410" height="50" class="pframe"/>
+<line x1="48" y1="381.4" x2="458" y2="381.4" class="pzero"/>
+<polyline points="48.0,360.6 145.6,360.6 340.9,360.6 458.0,360.6" fill="none" stroke="#0a8a3f" stroke-width="3.6"/>
+<text x="48" y="340" class="plab netlab">= net: flat (zero slope = no market risk)</text>
+<text x="48.0" y="410" class="ax am">6,500</text>
+<text x="145.6" y="410" class="ax am">7,000</text>
+<text x="243.2" y="410" class="ax am">7,500</text>
+<text x="340.9" y="410" class="ax am">8,000</text>
+<text x="438.5" y="410" class="ax am">8,500</text>
+<text x="253.0" y="424" class="axl am">S&amp;P 500 level at expiry</text>
+<text x="12" y="219" class="axl am" transform="rotate(-90 12 219)">payoff (index points)</text>
+</svg>
+      <figcaption>Box = a bull-call spread + a bear-put spread. Each leg bends at a strike; the four sum to a dead-flat payoff.</figcaption>
+    </figure>
+    <figure>
+<svg viewBox="0 0 472 352" class="pchart" role="img" aria-label="Conversion decomposition">
+<text x="48" y="15" class="ct">Conversion (collar @7500): three legs, one flat sum</text>
+<rect x="48" y="42" width="410" height="50" class="pframe"/>
+<line x1="48" y1="63.6" x2="458" y2="63.6" class="pzero"/>
+<polyline points="48.0,87.6 458.0,39.8" fill="none" stroke="#0b5fff" stroke-width="2"/>
+<text x="48" y="36" class="plab">long S&amp;P 500 (stock / ETF)</text>
+<text x="16" y="149" class="op">+</text>
+<rect x="48" y="118" width="410" height="50" class="pframe"/>
+<line x1="48" y1="139.6" x2="458" y2="139.6" class="pzero"/>
+<polyline points="48.0,123.2 243.2,145.9 458.0,145.9" fill="none" stroke="#7a3fb5" stroke-width="2"/>
+<text x="48" y="112" class="plab">long 7500 put</text>
+<text x="16" y="225" class="op">+</text>
+<rect x="48" y="194" width="410" height="50" class="pframe"/>
+<line x1="48" y1="215.6" x2="458" y2="215.6" class="pzero"/>
+<polyline points="48.0,205.0 243.2,205.0 458.0,230.0" fill="none" stroke="#c0392b" stroke-width="2"/>
+<text x="48" y="188" class="plab">short 7500 call</text>
+<text x="16" y="301" class="op">=</text>
+<rect x="48" y="270" width="410" height="50" class="pframe"/>
+<line x1="48" y1="291.6" x2="458" y2="291.6" class="pzero"/>
+<polyline points="48.0,288.6 458.0,288.6" fill="none" stroke="#0a8a3f" stroke-width="3.6"/>
+<text x="48" y="264" class="plab netlab">= net: flat (zero slope = no market risk)</text>
+<text x="48.0" y="334" class="ax am">6,500</text>
+<text x="145.6" y="334" class="ax am">7,000</text>
+<text x="243.2" y="334" class="ax am">7,500</text>
+<text x="340.9" y="334" class="ax am">8,000</text>
+<text x="438.5" y="334" class="ax am">8,500</text>
+<text x="253.0" y="348" class="axl am">S&amp;P 500 level at expiry</text>
+<text x="12" y="181" class="axl am" transform="rotate(-90 12 181)">profit &amp; loss (index points)</text>
+</svg>
+      <figcaption>Conversion = long index + a collar. The index rises 1-for-1, the collar falls 1-for-1; the slopes cancel exactly.</figcaption>
+    </figure>
+  </div>
+  <p class="muted">The <em>height</em> of each flat line is just convention — payoff vs P&amp;L, whether premiums and dividends are netted in — and is otherwise arbitrary. What matters is that the <b>slope is zero</b>: the position pays the same wherever the index lands. The yield is simply the gap between what you pay today and that locked terminal value — discounted at the <b>cash rate</b> for the box, at the richer <b>equity-financing rate</b> for the conversion.</p>
+
+  <h2>8 &middot; Why this is (almost) risk-free, and where the risk actually is</h2>
   <div class="grid2">
     <div class="card">
       <p style="margin-top:0"><b>What makes it safe</b></p>
@@ -212,13 +359,13 @@ Cost today = (Kₕᵢ − Kₗₒ) · e^(−r·T)   &larr; the spot price S canc
     </div>
   </div>
 
-  <h2>6 &middot; Bottom line</h2>
+  <h2>9 &middot; Bottom line</h2>
   <div class="card" style="border-left:4px solid var(--green)">
-    <p style="margin:0">The equity-funding squeeze that is inflating S&amp;P&nbsp;500 futures financing is directly harvestable. By <b>buying</b> the 18-Dec-2026 SPX 7000/8000 box for ~$97,865 and collecting a guaranteed $100,000 at expiry, you lend into that demand at an implied <b>4.28% — roughly 47 bp over the matched T-bill and 68 bp over SOFR</b>, with no directional exposure to stocks. Extend to Dec-2027/2028 to lock ~4.5–4.6% for longer. It is, in effect, a synthetic, OCC-collateralized T-bill yielding the squeeze premium.</p>
+    <p style="margin:0">The same SPX option chain prices <b>two</b> rates. The <b>box</b> harvests the first — a riskless, OCC-collateralized <b>~4.28% cash rate</b>, a clean synthetic T-bill ~47 bp over the bill but essentially <em>untouched</em> by the equity squeeze (that pickup is mostly Treasury specialness). The <b>conversion</b> harvests the second — the <b>~4.67% equity-financing rate</b> that the AI-rally / leveraged-ETF / SpaceX funding squeeze has inflated: ~39 bp richer than the box and ~86 bp over the T-bill. You collect that extra by owning the index and selling it forward, at the cost of dividend, capital and tracking risk. <b>Want riskless carry? Buy the box. Want to actually capture the squeeze? Put on the conversion.</b></p>
   </div>
 
   <footer>
-    <b>Sources &amp; data.</b> Option prices: CBOE delayed quotes, <a href="https://cdn.cboe.com/api/global/delayed_quotes/options/_SPX.json">_SPX.json</a> (15-Jun-2026). Benchmark rates: <a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve">U.S. Treasury Daily Par Yield Curve</a> (15-Jun-2026); <a href="https://www.sofrrate.com/">SOFR</a> 3.60%. Narrative: <a href="https://www.bloomberg.com/news/articles/2026-06-14/s-p-500-funding-squeeze-driven-by-ai-rally-spacex-ipo-stretches-banks">Bloomberg, "S&amp;P 500 Funding Squeeze Driven by AI Rally, SpaceX IPO"</a> (14-Jun-2026); <a href="https://www.cmegroup.com/education/files/S-and-P-500-Implied-Financing.pdf">CME, "Implied Financing in S&amp;P 500 Futures."</a> Box-spread mechanics: <a href="https://go.cboe.com/spx-box-spreads">CBOE SPX Box Spreads</a>.<br><br>
+    <b>Sources &amp; data.</b> Option prices: CBOE delayed quotes, <a href="https://cdn.cboe.com/api/global/delayed_quotes/options/_SPX.json">_SPX.json</a> (15-Jun-2026). Benchmark rates: <a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve">U.S. Treasury Daily Par Yield Curve</a> (15-Jun-2026); <a href="https://www.sofrrate.com/">SOFR</a> 3.60%. S&amp;P&nbsp;500 dividend yield 1.09% via <a href="https://www.gurufocus.com/economic_indicators/150/sp-500-dividend-yield">GuruFocus</a> (12-Jun-2026); E-mini (ES) futures cross-check via <a href="https://www.barchart.com/futures/quotes/ESZ26">Barchart</a>. Narrative: <a href="https://www.bloomberg.com/news/articles/2026-06-14/s-p-500-funding-squeeze-driven-by-ai-rally-spacex-ipo-stretches-banks">Bloomberg, "S&amp;P 500 Funding Squeeze Driven by AI Rally, SpaceX IPO"</a> (14-Jun-2026); <a href="https://www.cmegroup.com/education/files/S-and-P-500-Implied-Financing.pdf">CME, "Implied Financing in S&amp;P 500 Futures."</a> Box-spread mechanics: <a href="https://go.cboe.com/spx-box-spreads">CBOE SPX Box Spreads</a>.<br><br>
     <b>Disclaimer.</b> Educational analysis, not investment advice or a solicitation. Prices are delayed and indicative; actual fills, financing rates, and yields will differ. Options involve risk; consult a licensed advisor before trading.
   </footer>
 
